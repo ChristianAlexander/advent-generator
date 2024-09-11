@@ -34,13 +34,17 @@ defmodule Mix.Tasks.Advent.Generate.Day do
 
     full_day_number = String.pad_leading(to_string(day), 2, "0")
 
-    module_name = Igniter.Code.Module.parse("Advent.Year#{year}.Day#{full_day_number}")
-    part_one_module_name = Igniter.Code.Module.parse("Mix.Tasks.Y#{year}.D#{full_day_number}.P1")
-    part_two_module_name = Igniter.Code.Module.parse("Mix.Tasks.Y#{year}.D#{full_day_number}.P2")
+    day_module_name = Igniter.Code.Module.parse("Advent.Year#{year}.Day#{full_day_number}")
     test_module_name = Igniter.Code.Module.parse("Advent.Year#{year}.Day#{full_day_number}Test")
 
     igniter
-    |> Igniter.Code.Module.create_module(module_name, """
+    |> Igniter.assign(
+      day_module_name: day_module_name,
+      full_day_number: full_day_number,
+      day: day,
+      year: year
+    )
+    |> Igniter.Code.Module.create_module(day_module_name, """
       def part1(args) do
         args
       end
@@ -49,62 +53,56 @@ defmodule Mix.Tasks.Advent.Generate.Day do
         args
       end
     """)
-    |> Igniter.Code.Module.create_module(part_one_module_name, """
-      use Mix.Task
+    |> add_mix_task(1)
+    |> add_mix_task(2)
+    |> Igniter.Code.Module.create_module(
+      test_module_name,
+      """
+        use ExUnit.Case
 
-      import #{module_name}
+        import #{day_module_name}
 
-      @shortdoc "Day #{full_day_number} Part 1"
-      def run(args) do
-        input = Advent.Input.get!(#{day}, #{year})
+        @tag :skip
+        test "part1" do
+          input = nil
+          result = part1(input)
 
-        if Enum.member?(args, "-b"),
-          do: Benchee.run(%{part_1: fn -> input |> part1() end}),
-          else:
-            input
-            |> part1()
-            |> IO.inspect(label: "Part 1 Results")
-      end
-    """)
-    |> Igniter.Code.Module.create_module(part_two_module_name, """
-      use Mix.Task
+          assert result
+        end
 
-      import #{module_name}
+        @tag :skip
+        test "part2" do
+          input = nil
+          result = part2(input)
 
-      @shortdoc "Day #{full_day_number} Part 2"
-      def run(args) do
-        input = Advent.Input.get!(#{day}, #{year})
+          assert result
+        end
+      """,
+      path: Igniter.Code.Module.proper_test_location(test_module_name)
+    )
+  end
 
-        if Enum.member?(args, "-b"),
-          do: Benchee.run(%{part_2: fn -> input |> part2() end}),
-          else:
-            input
-            |> part1()
-            |> IO.inspect(label: "Part 2 Results")
-      end
-    """)
-    |> Igniter.Code.Module.create_module(test_module_name, """
-      use ExUnit.Case
+  defp add_mix_task(igniter, part) do
+    template_path = Path.expand("templates/day_mix_task.eex")
 
-      import #{module_name}
+    part_module_name =
+      Igniter.Code.Module.parse(
+        "Mix.Tasks.Y#{igniter.assigns[:year]}.D#{igniter.assigns[:full_day_number]}.P#{part}"
+      )
 
-      @tag :skip
-      test "part1" do
-        input = nil
-        result = part1(input)
+    assigns =
+      Keyword.merge(
+        Map.to_list(igniter.assigns),
+        part: part,
+        module_name: part_module_name
+      )
 
-        assert result
-      end
-
-      @tag :skip
-      test "part2" do
-        input = nil
-        result = part2(input)
-
-        assert result
-      end
-    """,
-    path: Igniter.Code.Module.proper_test_location(test_module_name))
+    Igniter.copy_template(
+      igniter,
+      template_path,
+      Igniter.Code.Module.proper_location(part_module_name),
+      assigns
+    )
   end
 
   defp advent_day(nil) do

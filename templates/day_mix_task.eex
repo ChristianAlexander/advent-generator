@@ -1,0 +1,17 @@
+defmodule <%= @module_name %> do
+  use Mix.Task
+
+  import <%= @day_module_name %>
+
+  @shortdoc "Day <%= @full_day_number %> Part <%= @part %>"
+  def run(args) do
+    input = Advent.Input.get!(<%= @day %>, <%= @year %>)
+
+    if Enum.member?(args, "-b"),
+      do: Benchee.run(%{part_<%= @part %>: fn -> input |> part<%= @part %>() end}),
+      else:
+        input
+        |> part<%= @part %>()
+        |> IO.inspect(label: "Part <%= @part %> Results")
+  end
+end
