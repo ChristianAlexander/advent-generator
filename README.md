@@ -6,6 +6,10 @@ Uses [Ash Project’s Igniter tool](https://github.com/ash-project/igniter) to g
 
 Based on [Mitchell Hanberg’s advent-of-code-elixir-starter](https://github.com/mhanberg/advent-of-code-elixir-starter).
 
+Watch the related YouTube video:
+
+[![Watch the video](https://img.youtube.com/vi/gpaV4bgEG-g/maxresdefault.jpg)](https://youtu.be/gpaV4bgEG-g)
+
 ## Usage
 
 Each day in December, run `mix advent.generate.day` to generate files related to the current day’s challenge.
