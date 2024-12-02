@@ -59,10 +59,11 @@ defmodule Mix.Tasks.Advent.Generate.Day do
       test_module_name,
       """
         use ExUnit.Case
-
         import #{day_module_name}
+        @moduletag :"y#{year}.d#{full_day_number}"
+        @moduletag :y#{year}
 
-        @tag :skip
+        @tag :"y#{year}.d#{full_day_number}.p1"
         test "part1" do
           input = nil
           result = part1(input)
@@ -70,7 +71,7 @@ defmodule Mix.Tasks.Advent.Generate.Day do
           assert result
         end
 
-        @tag :skip
+        @tag :"y#{year}.d#{full_day_number}.p2"
         test "part2" do
           input = nil
           result = part2(input)

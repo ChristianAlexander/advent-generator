@@ -50,3 +50,26 @@ AdventOfCode.Input.get!(7)
 AdventOfCode.Input.delete!(7, 2019)
 # and the next time you `get!` it will download a fresh one -- use this sparingly!
 ```
+
+
+### Testing and Running your code
+
+You can adjust your test to reflect the sample provided at the challenge description. And run your tests:
+```bash
+mix test --only y2024.d01.p1
+mix test --only y2024.d01
+mix text --only y2024
+```
+
+This syntax is pretty straight forward, the first one will run the test for a particular part, the second will run all the tests for that day, and the third one for the year.
+
+As you progress with the challenge you'll find edge cases, and you can create your own tests for that and even reuse some of those tags.
+
+When you're done with testing you can run your code with the command:
+```bash
+mix y2024.d01.p1
+```
+
+The identification of the task to run your code and the name of the test follows the same structure, so it's easy to move between those.
+
+
